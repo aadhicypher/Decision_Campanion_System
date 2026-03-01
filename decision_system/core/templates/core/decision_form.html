@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decision Companion</title>
+</head>
+<body>
+
+<h2>DECIDE</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Enter the basis of decision:</label>
+    <select name="category" required>
+        <option value="product">Product Purchase</option>
+        <option value="hiring">Hiring</option>
+        <option value="travel">Travel Decision</option>
+        <option value="financial">Financial</option>
+        <option value="technology">Technology Stack</option>
+        <option value="career">Career</option>
+        <option value="other">Other</option>
+    </select>
+
+    <br><br>
+
+    <label>Enter the number of decisions:</label>
+    <input type="number" name="num_options" required>
+
+    <br><br>
+
+    <label>Enter the decisions (comma separated):</label>
+    <input type="text" name="options" required>
+
+    <br><br>
+
+    <button type="submit">Next</button>
+</form>
+
+</body>
+</html>
