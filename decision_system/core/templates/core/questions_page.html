@@ -5,24 +5,30 @@
 </head>
 <body>
 
-<h2>Score the Options</h2>
+<h2>Score Your Options</h2>
+<h4>{{ decision.context }}</h4>
 
 <form method="POST">
     {% csrf_token %}
 
-    {% for question in questions %}
-        <h4>{{ question }}</h4>
+    {% for criterion in criteria %}
+        <h4>{{ criterion.name }}</h4>
 
         {% for option in options %}
-            <label>{{ option }}</label>
-            <input type="range" name="{{ question }}__{{ option }}"
-                   min="1" max="5" value="3">
+            <label>{{ option.name }}</label>
+            <input type="range"
+                   name="{{ criterion.id }}__{{ option.id }}"
+                   min="1"
+                   max="5"
+                   value="3">
             <br><br>
         {% endfor %}
+
         <hr>
     {% endfor %}
 
-    <button type="submit">Submit Scores</button>
+    <button type="submit">Calculate Result</button>
+
 </form>
 
 </body>

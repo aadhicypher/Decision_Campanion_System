@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decision Result</title>
+</head>
+<body>
+
+<h2>Final Decision</h2>
+
+<p><strong>Decision:</strong> {{ decision.context }}</p>
+<p><strong>Best Option:</strong> {{ result.chosen_option.name }}</p>
+<p><strong>Total Score:</strong> {{ result.total_score }}</p>
+
+<a href="{% url 'decision_form' %}">Start New Decision</a>
+
+</body>
+</html>
