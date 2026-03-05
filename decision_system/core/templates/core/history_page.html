@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Decision History</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f8; }
+.card {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 5px solid #2563eb;
+    border-radius: 8px;
+}
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+</style>
+</head>
+<body>
+
+<h2>{{ decision.context }}</h2>
+
+{% if result %}
+<div class="card">
+    <h3>Chosen Option</h3>
+    <p>{{ result.chosen_option.name }}</p>
+    <p><strong>Final Score:</strong> {{ result.total_score }}</p>
+</div>
+
+<div class="card">
+    <h3>AI Explanation</h3>
+    <p>{{ result.explanation }}</p>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3>Saved Scores</h3>
+    {% if scores %}
+    <table>
+        <thead>
+            <tr>
+                <th>Option</th>
+                <th>Criterion</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for score in scores %}
+            <tr>
+                <td>{{ score.option.name }}</td>
+                <td>{{ score.criterion.name }}</td>
+                <td>{{ score.value }}/100</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No scores were saved for this decision.</p>
+    {% endif %}
+</div>
+
+<a href="/">Back to Home</a>
+
+</body>
+</html>

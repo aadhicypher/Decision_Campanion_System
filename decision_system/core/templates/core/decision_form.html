@@ -1,57 +1,266 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Decision</title>
-</head>
-<body>
+{% extends "core/base.html" %}
 
-<h2>Create Decision</h2>
+{% block title %}Create Decision - Decide{% endblock %}
 
-<form method="POST">
-    {% csrf_token %}
+{% block extra_css %}
+<style>
+    .decision-form-container {
+        display: grid;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
 
-    <label>Select Category:</label>
-    <select id="category">
-        <option value="">Select Category</option>
-        {% for category in categories %}
-            <option value="{{ category.id }}">{{ category.name }}</option>
-        {% endfor %}
-    </select>
+    .form-wrapper {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        border: 1px solid var(--gray-100);
+    }
 
-    <br><br>
+    .form-header {
+        margin-bottom: 2rem;
+    }
 
-    <label>Select SubCategory:</label>
-    <select name="subcategory" id="subcategory" required>
-        <option value="">Select SubCategory</option>
-        {% for category in categories %}
-            {% for sub in category.subcategories.all %}
-                <option value="{{ sub.id }}" data-category="{{ category.id }}">
-                    {{ sub.name }}
-                </option>
-            {% endfor %}
-        {% endfor %}
-    </select>
+    .form-header p {
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        font-size: 1.05rem;
+    }
 
-    <br><br>
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
 
-    <label>Decision Description:</label>
-    <input type="text" name="context" required>
+    .form-group:last-of-type {
+        margin-bottom: 0;
+    }
 
-    <br><br>
+    label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
 
-    <label>Enter Options (comma separated):</label>
-    <input type="text" name="options" required>
+    .help-text {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
 
-    <br><br>
+    select,
+    input[type="text"] {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--gray-200);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background-color: white;
+        color: var(--text-primary);
+    }
 
-    <button type="submit">Next</button>
+    select:hover,
+    input[type="text"]:hover {
+        border-color: var(--gray-300);
+    }
 
-</form>
+    select:focus,
+    input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232563eb' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 2rem;
+    }
+
+    button[type="submit"]:hover {
+        background-color: var(--primary-dark);
+        box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+    }
+
+    button[type="submit"]:active {
+        transform: translateY(0);
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-box p {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .error-alert {
+        background-color: #fee;
+        border-left: 4px solid #ef4444;
+        color: #991b1b;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .error-alert.show {
+        display: block;
+    }
+
+    .error-alert ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .error-alert li {
+        margin: 0.5rem 0;
+        font-size: 0.95rem;
+    }
+
+    .field-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    @media (max-width: 768px) {
+        .form-wrapper {
+            padding: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="decision-form-container">
+    <div class="info-box">
+        <p> Start by selecting a category and describing your decision scenario. We'll help you evaluate your options systematically.</p>
+    </div>
+
+    <div class="form-wrapper">
+        <div class="form-header">
+            <h2>Let's Make a Decision</h2>
+            <p>Follow these steps to evaluate your options objectively</p>
+        </div>
+
+        <div class="error-alert" id="errorAlert" {% if errors %}style="display: block;"{% endif %}>
+            <strong>Please fix the following:</strong>
+            <ul id="errorList">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <form method="POST" id="decisionForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="category">Select Category</label>
+                <select id="category" name="category" {% if form_data.category %}value="{{ form_data.category }}"{% endif %}>
+                    <option value="">Choose a category...</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if form_data.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                    
+                </select>
+                <div class="help-text">Pick the type of decision you're making</div>
+            </div>
+
+            <div class="form-group" id="subcategory-group">
+                <label for="subcategory">Select SubCategory</label>
+                <select name="subcategory" id="subcategory" {% if form_data.subcategory %}value="{{ form_data.subcategory }}"{% endif %}>
+                    <option value="">Choose a subcategory...</option>
+                    {% for category in categories %}
+                        {% for sub in category.subcategories.all %}
+                            <option value="{{ sub.id }}" data-category="{{ category.id }}" {% if form_data.subcategory == sub.id|stringformat:"s" %}selected{% endif %}>
+                                {{ sub.name }}
+                            </option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+                <div class="help-text">Select a more specific subcategory</div>
+            </div>
+
+            <div class="form-group">
+                <label for="context">Decision Description</label>
+                <input type="text" name="context" id="context" placeholder="e.g., Which laptop should I buy for programming?" {% if form_data.context %}value="{{ form_data.context }}"{% endif %}>
+                <div class="help-text">Briefly describe what you're trying to decide</div>
+            </div>
+
+            <div class="form-group">
+                <label for="options">Your Options</label>
+                <input type="text" name="options" id="options" placeholder="e.g., MacBook Pro, Dell XPS, ThinkPad X1" {% if form_data.options %}value="{{ form_data.options }}"{% endif %}>
+                <div class="help-text">Enter options separated by commas (minimum 2)</div>
+            </div>
+
+            <button type="submit">Continue to Scoring →</button>
+
+        </form>
+    </div>
+</div>
 
 <script>
     const categorySelect = document.getElementById("category");
     const subcategorySelect = document.getElementById("subcategory");
+    const contextInput = document.getElementById("context");
+    const optionsInput = document.getElementById("options");
+    const form = document.getElementById("decisionForm");
+    const errorAlert = document.getElementById("errorAlert");
+    const errorList = document.getElementById("errorList");
+    const subCategoryGroup = document.getElementById("subcategory-group");
+    const OTHER_CATEGORY_IDS = {{ other_category_ids|safe }};
 
+    function isOtherCategorySelected() {
+        return OTHER_CATEGORY_IDS.includes(categorySelect.value);
+    }
+
+    function updateSubCategoryVisibility() {
+        if (isOtherCategorySelected()) {
+            subCategoryGroup.style.display = "none";
+            subcategorySelect.value = "";
+        } else {
+            subCategoryGroup.style.display = "block";
+        }
+    }
+
+    // Show error alert if there are server-side errors
+    if (errorList.children.length > 0) {
+        errorAlert.classList.add("show");
+    }
+
+    // Filter subcategories based on selected category
     categorySelect.addEventListener("change", function () {
         const selectedCategory = this.value;
 
@@ -66,8 +275,68 @@
         }
 
         subcategorySelect.value = "";
+        updateSubCategoryVisibility();
     });
-</script>
 
-</body>
-</html>
+    // Form validation on submit
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        
+        // Clear previous client-side errors (keep server-side errors if refreshed)
+        const clientErrors = [];
+        
+        // Remove error styling from fields
+        categorySelect.classList.remove("field-error");
+        subcategorySelect.classList.remove("field-error");
+        contextInput.classList.remove("field-error");
+        optionsInput.classList.remove("field-error");
+        
+        // Validate category
+        if (!categorySelect.value.trim()) {
+            clientErrors.push("Please select a category");
+            categorySelect.classList.add("field-error");
+        }
+
+        // Validate subcategory
+        if (!isOtherCategorySelected() && !subcategorySelect.value.trim()) {
+            clientErrors.push("Please select a subcategory");
+            subcategorySelect.classList.add("field-error");
+        }
+
+        // Validate decision description
+        if (!contextInput.value.trim()) {
+            clientErrors.push("Please enter a decision description");
+            contextInput.classList.add("field-error");
+        }
+
+        // Validate options
+        if (!optionsInput.value.trim()) {
+            clientErrors.push("Please enter your options");
+            optionsInput.classList.add("field-error");
+        } else {
+            const optionsArray = optionsInput.value.split(",").map(opt => opt.trim()).filter(opt => opt);
+            if (optionsArray.length < 2) {
+                clientErrors.push("Please enter at least 2 options separated by commas");
+                optionsInput.classList.add("field-error");
+            }
+        }
+
+        // If there are client-side errors, display them
+        if (clientErrors.length > 0) {
+            errorList.innerHTML = "";
+            clientErrors.forEach(error => {
+                const li = document.createElement("li");
+                li.textContent = error;
+                errorList.appendChild(li);
+            });
+            errorAlert.classList.add("show");
+            errorAlert.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+            // Submit the form if all validations pass
+            form.submit();
+        }
+    });
+
+    updateSubCategoryVisibility();
+</script>
+{% endblock %}

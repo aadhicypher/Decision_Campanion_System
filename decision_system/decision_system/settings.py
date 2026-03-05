@@ -69,8 +69,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'decision_system.wsgi.application'
 
+# Authentication URLs
+LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
+
+# Email Configuration (Development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+# For production, use:
+# EMAIL_HOST = 'smtp.gmail.com' 
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'your-email@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'
+# EMAIL_USE_TLS = True
+
+# Password reset email settings
+PASSWORD_RESET_TIMEOUT = 3600*24  # 24 hours
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

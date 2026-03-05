@@ -16,6 +16,7 @@ def run():
     travel = Category.objects.create(name="Travel Decision")
     hiring = Category.objects.create(name="Hiring Decision")
     financial = Category.objects.create(name="Financial Decision")
+    other = Category.objects.create(name="Other Decision")
 
     # ============================
     # Subcategories

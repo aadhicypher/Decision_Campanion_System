@@ -65,7 +65,7 @@ class Criterion(models.Model):
         related_name="decision_criteria"
     )
     name = models.CharField(max_length=200)
-    weight = models.FloatField(default=1.0)
+    weight = models.FloatField(default=40.0)
     is_positive = models.BooleanField(default=True)
 
     def __str__(self):
@@ -79,6 +79,6 @@ class Score(models.Model):
     
 class Result(models.Model):
     decision = models.OneToOneField(Decision, on_delete=models.CASCADE)
-    chosen_option = models.CharField(max_length=500)
-    reason = models.TextField(blank=True)
-    total_score = models.IntegerField(default=0)
+    chosen_option = models.ForeignKey(Option, on_delete=models.CASCADE)
+    total_score = models.FloatField()
+    explanation = models.TextField(null=True, blank=True)
