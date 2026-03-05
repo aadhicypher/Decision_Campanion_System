@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Options - Decide</title>
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --gray-50: #0b1220;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --gray-300: #3a4b66;
+        --gray-700: #9fb1cc;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell { padding-top: 2rem; padding-bottom: 2.5rem; }
+
+    h2, h3, h4 { color: #f3f7ff; }
+
+    input[type="number"],
+    input[type="text"],
+    select,
+    textarea {
+        background: #0f1a2c;
+        color: var(--text-primary);
+        border: 1px solid var(--gray-300);
+    }
+
+    button {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .score-container {
+        margin-bottom: 3rem;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.16) 0%, rgba(56, 189, 248, 0.08) 100%);
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-box p {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .score-section {
+        background: rgba(15, 24, 40, 0.94);
+        margin-bottom: 2rem;
+        padding: 1.75rem;
+        border-radius: 12px;
+        border: 1px solid var(--gray-200);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--gray-100);
+    }
+
+    .section-header h4 {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .priority-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .priority-input-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .priority-slider-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    input[type="range"] {
+        flex: 1;
+        height: 5px;
+        border-radius: 3px;
+        background: linear-gradient(to right, var(--gray-300) 0%, var(--primary-color) 100%);
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+        width: 24px;
+        height: 24px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+        width: 24px;
+        height: 24px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .score-value {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.5rem 0.875rem;
+        border-radius: 6px;
+        font-weight: 700;
+        min-width: 50px;
+        text-align: center;
+        font-size: 0.95rem;
+        line-height: 1;
+    }
+
+    .score-group {
+        margin-bottom: 1.25rem;
+        padding: 1rem;
+        background: #101b2e;
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .score-group:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+
+    .score-group label {
+        font-weight: 600;
+        margin: 0;
+        min-width: 150px;
+        color: var(--text-primary);
+    }
+
+    .slider-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 250px;
+    }
+
+    .extra-section {
+        margin-top: 3rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.05) 100%);
+        border-radius: 12px;
+        border: 2px dashed var(--warning-color);
+    }
+
+    .extra-section h4 {
+        color: #fbbf24;
+        margin-bottom: 1.5rem;
+    }
+
+    .custom-criterion {
+        background: #101b2e;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--gray-200);
+    }
+
+    .custom-criterion h4 {
+        color: #dbe7fb;
+        margin-top: 0;
+    }
+
+    .custom-criterion input[type="text"],
+    .custom-criterion input[type="number"] {
+        margin-bottom: 1rem;
+    }
+
+    .custom-criterion input[type="text"] {
+        width: 100%;
+    }
+
+    .custom-criterion input[type="number"] {
+        width: 120px;
+    }
+
+    .remove-btn {
+        background-color: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 0.625rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        margin-top: 1rem;
+    }
+
+    .remove-btn:hover {
+        background-color: #dc2626;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .add-criterion-btn {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+
+    .add-criterion-btn:hover {
+        background-color: #059669;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        transform: translateY(-2px);
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 2rem;
+    }
+
+    button[type="submit"]:hover {
+        background-color: var(--primary-dark);
+        box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .live-result-card {
+        background: rgba(15, 24, 40, 0.94);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 2rem;
+    }
+
+    .live-result-card h3 {
+        margin: 0 0 0.8rem 0;
+        font-size: 1.05rem;
+        color: #f3f7ff;
+    }
+
+    .live-result-best {
+        color: var(--text-secondary);
+        margin-bottom: 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .live-result-list {
+        display: grid;
+        gap: 0.55rem;
+    }
+
+    .live-result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+        background: #101b2e;
+        font-size: 0.95rem;
+    }
+
+    .live-result-score {
+        font-weight: 700;
+        color: #bfdbfe;
+    }
+
+    .form-wrapper {
+        background: rgba(15, 24, 40, 0.94);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--gray-200);
+    }
+
+    .form-wrapper > p {
+        color: var(--text-secondary);
+        margin-bottom: 1.25rem;
+    }
+
+    .no-criteria-note {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .error-alert {
+        background-color: #fee;
+        border-left: 4px solid #ef4444;
+        color: #991b1b;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .score-group {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .score-group label {
+            min-width: auto;
+        }
+
+        .slider-container {
+            width: 100%;
+            min-width: auto;
+        }
+
+        .custom-criterion input[type="number"] {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
+<div class="score-container">
+    <div class="info-box">
+        <p>⭐ Now rate each option on the criteria. Adjust the priority levels if needed and score each option from 1-100.</p>
+    </div>
+
+    <div class="form-wrapper">
+        <h2>Score Your Options</h2>
+        <p><strong>{{ decision.context }}</strong></p>
+
+        {% if errors %}
+        <div class="error-alert">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- EXISTING CRITERIA -->
+            {% if criteria %}
+            {% for criterion in criteria %}
+            <div class="score-section">
+                <div class="section-header">
+                    <h4>{{ criterion.name }}</h4>
+                </div>
+
+                <div class="priority-input-row">
+                    <span class="priority-label">Priority Level (%)</span>
+                    <div class="priority-slider-container">
+                        <input type="range"
+                               name="weight__{{ criterion.id }}"
+                               min="0"
+                               max="100"
+                               value="{{ criterion.weight }}"
+                               class="priority-slider">
+                        <span class="score-value priority-value">{{ criterion.weight }}</span>
+                    </div>
+                </div>
+
+                {% for option in options %}
+                <div class="score-group">
+                    <label>{{ option.name }}</label>
+                    <div class="slider-container">
+                        <input type="range"
+                               name="{{ criterion.id }}__{{ option.id }}"
+                               min="1"
+                               max="100"
+                               value="50"
+                               class="score-slider">
+                        <span class="score-value">50</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="score-section">
+                <p class="no-criteria-note">No predefined criteria found for this decision. Add your own custom criteria below.</p>
+            </div>
+            {% endif %}
+
+            <!-- CUSTOM CRITERIA -->
+            <div class="extra-section">
+                <h4>✨ Add Custom Criteria</h4>
+                <p class="help-text" style="margin-bottom: 1rem;">Add your own evaluation criteria to personalize the decision</p>
+
+                <div id="extra-criteria-container"></div>
+
+                <button type="button" class="add-criterion-btn" onclick="addExtraCriterion()">
+                    + Add Another Criterion
+                </button>
+            </div>
+            <div class="live-result-card">
+                <h3>Live Result Preview</h3>
+                <p class="live-result-best" id="liveResultBest">Adjust priorities and scores to preview ranking.</p>
+                <div class="live-result-list" id="liveResultList"></div>
+            </div>
+
+            <button type="submit">Calculate Results -></button>
+        </form>
+    </div>
+</div>
+
+<!-- PASS OPTIONS SAFELY TO JS -->
+<script>
+const OPTIONS = [
+    {% for option in options %}
+        { id: "{{ option.id }}", name: "{{ option.name }}" },
+    {% endfor %}
+];
+
+const EXISTING_CRITERIA_NAMES = new Set([
+    {% for criterion in criteria %}
+    "{{ criterion.name|lower|escapejs }}",
+    {% endfor %}
+]);
+</script>
+
+<script>
+let extraIndex = 0;
+
+function addExtraCriterion() {
+    extraIndex++;
+
+    const container = document.getElementById("extra-criteria-container");
+
+    const block = document.createElement("div");
+    block.classList.add("custom-criterion");
+    block.id = "extra-block-" + extraIndex;
+
+    block.innerHTML = `
+        <h4>Custom Criterion ${extraIndex}</h4>
+
+        <input type="text"
+               name="extra_name_${extraIndex}"
+               placeholder="Enter criterion name (e.g., Customer Support)"
+               required
+               style="width:100%; padding:0.75rem 1rem; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 1rem;">
+
+        <label class="priority-label">Priority Level (%)</label>
+        <input type="number"
+               name="extra_weight_${extraIndex}"
+               min="1"
+               max="100"
+               value="40"
+               style="width:120px; padding:0.75rem 1rem; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 1rem;">
+
+        <div style="margin-top: 1rem;">
+            ${generateOptionSliders(extraIndex)}
+        </div>
+
+        <button type="button"
+                class="remove-btn"
+                onclick="removeExtraCriterion(${extraIndex})">
+            🗑️ Remove This Criterion
+        </button>
+    `;
+
+    container.appendChild(block);
+    updateSliders();
+    updateLivePreview();
+}
+
+function generateOptionSliders(index) {
+    let html = '';
+
+    for (let i = 0; i < OPTIONS.length; i++) {
+        const option = OPTIONS[i];
+        html += '<div class="score-group">' +
+                '<label>' + option.name + '</label>' +
+                '<div class="slider-container">' +
+                '<input type="range" name="extra_' + index + '__' + option.id + '" min="1" max="100" value="50" class="score-slider">' +
+                '<span class="score-value">50</span>' +
+                '</div>' +
+                '</div>';
+    }
+
+    return html;
+}
+
+function removeExtraCriterion(index) {
+    const block = document.getElementById("extra-block-" + index);
+    if (block) {
+        block.remove();
+        updateLivePreview();
+    }
+}
+
+function updateSliders() {
+    document.querySelectorAll('.score-slider').forEach(slider => {
+        slider.oninput = function() {
+            const valueSpan = this.parentElement.querySelector('.score-value');
+            if (valueSpan) {
+                valueSpan.textContent = this.value;
+            }
+            updateLivePreview();
+        }
+    })
+
+    document.querySelectorAll('.priority-slider').forEach(slider => {
+        slider.oninput = function() {
+            const valueSpan = this.parentElement.querySelector('.score-value');
+            if (valueSpan) {
+                valueSpan.textContent = this.value;
+            }
+            updateLivePreview();
+        }
+    });
+
+    document.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+        input.oninput = function() {
+            updateLivePreview();
+        };
+    });
+}
+
+function getNumericValue(name, fallback = 0) {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return fallback;
+    const parsed = Number(el.value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function updateLivePreview() {
+    const listEl = document.getElementById("liveResultList");
+    const bestEl = document.getElementById("liveResultBest");
+    if (!listEl || !bestEl) return;
+
+    const criteriaWeights = [];
+    document.querySelectorAll('.priority-slider[name^="weight__"]').forEach(slider => {
+        criteriaWeights.push({
+            key: slider.name,
+            weight: Math.max(0, Number(slider.value) || 0)
+        });
+    });
+
+    const seenCustom = new Set();
+    document.querySelectorAll('.custom-criterion').forEach(block => {
+        const id = block.id.replace('extra-block-', '');
+        const nameInput = block.querySelector(`[name="extra_name_${id}"]`);
+        const weightInput = block.querySelector(`[name="extra_weight_${id}"]`);
+        const customName = (nameInput ? nameInput.value : '').trim().toLowerCase();
+        const weight = Math.max(0, Number(weightInput ? weightInput.value : 0) || 0);
+
+        if (!customName) return;
+        if (EXISTING_CRITERIA_NAMES.has(customName)) return;
+        if (seenCustom.has(customName)) return;
+        seenCustom.add(customName);
+
+        criteriaWeights.push({
+            key: `extra_${id}`,
+            weight: weight
+        });
+    });
+
+    const totalPriority = criteriaWeights.reduce((sum, c) => sum + c.weight, 0);
+    if (totalPriority <= 0) {
+        bestEl.textContent = "Add at least one criterion with positive priority to preview ranking.";
+        listEl.innerHTML = "";
+        return;
+    }
+
+    const scores = OPTIONS.map(opt => {
+        let total = 0;
+
+        criteriaWeights.forEach(c => {
+            const normalizedPriority = c.weight / totalPriority;
+            let rawScore = 0;
+
+            if (c.key.startsWith("weight__")) {
+                const criterionId = c.key.replace("weight__", "");
+                rawScore = getNumericValue(`${criterionId}__${opt.id}`, 0);
+            } else {
+                const extraId = c.key.replace("extra_", "");
+                rawScore = getNumericValue(`extra_${extraId}__${opt.id}`, 0);
+            }
+
+            total += (Math.max(0, Number(rawScore) || 0) / 100) * normalizedPriority;
+        });
+
+        return { id: opt.id, name: opt.name, score: total };
+    }).sort((a, b) => b.score - a.score);
+
+    const best = scores[0];
+    bestEl.textContent = `Current best: ${best.name} (${best.score.toFixed(4)})`;
+    listEl.innerHTML = scores.map((row, idx) => `
+        <div class="live-result-item">
+            <span>#${idx + 1} ${row.name}</span>
+            <span class="live-result-score">${row.score.toFixed(4)}</span>
+        </div>
+    `).join("");
+}
+
+updateSliders();
+updateLivePreview();
+</script>
+</main>
+</body>
+</html>
+

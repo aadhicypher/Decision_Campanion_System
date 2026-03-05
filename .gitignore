@@ -20,3 +20,28 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+ 
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Virtual Environment
+env/
+venv/
+.venv/
+
+# Django stuff
+*.log
+staticfiles/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+decision_system/core/migrations/*
+!decision_system/core/migrations/__init__.py

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Result - Decide</title>
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --success-color: #10b981;
+        --gray-50: #0b1220;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell { padding-top: 2rem; padding-bottom: 2.5rem; }
+
+    .results-container { margin-bottom: 3rem; }
+    .summary, .card {
+        background: rgba(15, 24, 40, 0.94);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--gray-200);
+        margin-bottom: 1.5rem;
+    }
+    .summary {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        color: white;
+    }
+    .summary p { color: white; margin: 0.5rem 0; }
+    h2 { color: #f3f7ff; }
+    .rank-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--gray-100);
+    }
+    .rank-row:last-child { border-bottom: none; }
+    .badge {
+        display: inline-block;
+        background: var(--gray-100);
+        border-radius: 8px;
+        padding: 0.3rem 0.6rem;
+        font-weight: 700;
+    }
+    .custom-badge {
+        background: #fef3c7;
+        color: #92400e;
+        margin-left: 0.5rem;
+        font-size: 0.75rem;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
+    th, td {
+        border-bottom: 1px solid var(--gray-100);
+        padding: 0.65rem;
+        text-align: left;
+    }
+    .best-row { background: rgba(16, 185, 129, 0.08); }
+    button {
+        padding: 0.9rem 1.4rem;
+        border: none;
+        border-radius: 8px;
+        background: var(--primary-color);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
+<div class="results-container">
+    <div class="summary">
+        <p><strong>{{ decision.context }}</strong></p>
+        <p>Best Option: <strong>{{ result.chosen_option.name }}</strong></p>
+        <p>Final Score: <strong>{{ result.total_score }}</strong></p>
+    </div>
+
+    <div class="card">
+        <h2>Ranked Results</h2>
+        {% for row in ranked_results %}
+        <div class="rank-row">
+            <div><strong>#{{ forloop.counter }}</strong> {{ row.option_name }}</div>
+            <div class="badge">{{ row.score }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card">
+        <h2>Criteria Breakdown</h2>
+        {% for criterion in criterion_breakdown %}
+        <div style="margin-bottom: 1.25rem;">
+            <div>
+                <strong>{{ criterion.name }}</strong>
+                <span class="badge">Priority {{ criterion.weight }}</span>
+                {% if criterion.is_custom %}
+                    <span class="badge custom-badge">CUSTOM</span>
+                {% endif %}
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Score</th>
+                        <th>Weighted Contribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in criterion.option_scores %}
+                    <tr {% if row.option_id == criterion.best_option_id %}class="best-row"{% endif %}>
+                        <td>{{ row.option_name }}</td>
+                        <td>{{ row.raw_value }}/100</td>
+                        <td>{{ row.weighted }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card">
+        <h2>Reason</h2>
+        <p>{{ result.explanation }}</p>
+    </div>
+
+    <button onclick="window.location.href='{% url 'decision_form' %}'">Make Another Decision</button>
+</div>
+</main>
+</body>
+</html>

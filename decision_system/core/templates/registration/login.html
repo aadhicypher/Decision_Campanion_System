@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Decide</title>
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --danger-color: #ef4444;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --gray-300: #3a4b66;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell { padding-top: 2rem; padding-bottom: 2.5rem; }
+    .login-container {
+        display: grid;
+        place-items: center;
+        min-height: 60vh;
+        margin-bottom: 2rem;
+    }
+
+    .login-wrapper {
+        background: rgba(15, 24, 40, 0.94);
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--gray-200);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-header h2 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-color);
+    }
+
+    .login-header p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    form p {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    form label {
+        margin: 0;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    form ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    form ul li {
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    form input {
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--gray-200);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background-color: #0f1a2c;
+        color: var(--text-primary);
+    }
+
+    form input:hover {
+        border-color: var(--gray-300);
+    }
+
+    form input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0;
+        margin-top: 1rem;
+    }
+
+    button[type="submit"]:hover {
+        background-color: var(--primary-dark);
+        box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
+        transform: translateY(-2px);
+    }
+
+    button[type="submit"]:active {
+        transform: translateY(0);
+    }
+
+    .error-message {
+        background-color: #fee;
+        border-left: 4px solid var(--danger-color);
+        color: #c00;
+        padding: 0.875rem 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .auth-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .auth-links a {
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .auth-links a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    .signup-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--gray-200);
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .signup-link a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .login-wrapper {
+            padding: 1.5rem;
+        }
+
+        .login-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .auth-links {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .auth-links a {
+            text-align: center;
+        }
+    }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
+<div class="login-container">
+    <div class="login-wrapper">
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p>Sign in to start making smart decisions</p>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="error-message">
+            {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                <p>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="error-message" style="margin: 0.5rem 0 0 0; padding: 0.5rem;">
+                            {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </p>
+            {% endfor %}
+            <button type="submit">Sign In</button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{% url 'forgot_password' %}">🔑 Forgot Password?</a>
+            <a href="{% url 'signup' %}">Create Account →</a>
+        </div>
+
+        <div class="signup-link">
+            Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>
+        </div>
+    </div>
+</div>
+</main>
+</body>
+</html>
+

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision History - Decide</title>
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --gray-50: #0b1220;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell { padding-top: 2rem; padding-bottom: 2.5rem; }
+
+    .card {
+        background: rgba(15, 24, 40, 0.94);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+        padding: 1.5rem;
+    }
+
+    button {
+        padding: 0.7rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        background: var(--primary-color);
+        color: #fff;
+        cursor: pointer;
+    }
+
+    h2, h3 { color: #f3f7ff; }
+    .history-page {
+        margin-bottom: 2rem;
+    }
+
+    .history-page h2 {
+        margin-bottom: 1.25rem;
+    }
+
+    .history-card {
+        border-left: 5px solid var(--primary-color);
+        margin-bottom: 1.25rem;
+    }
+
+    .history-card h3 {
+        margin-top: 0;
+    }
+
+    .scores-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .scores-table th,
+    .scores-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--gray-200);
+        text-align: left;
+    }
+
+    .scores-table th {
+        color: var(--text-primary);
+        background: var(--gray-50);
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 0.5rem;
+        color: var(--primary-dark);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
+<div class="history-page">
+    <h2>{{ decision.context }}</h2>
+
+    {% if result %}
+        <div class="card history-card">
+            <h3>Chosen Option</h3>
+            <p>{{ result.chosen_option.name }}</p>
+            <p><strong>Final Score:</strong> {{ result.total_score }}</p>
+        </div>
+
+        <div class="card history-card">
+            <h3>Reason</h3>
+            <p>{{ result.explanation }}</p>
+        </div>
+    {% endif %}
+
+    <div class="card history-card">
+        <h3>Saved Scores</h3>
+        {% if scores %}
+            <table class="scores-table">
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Criterion</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for score in scores %}
+                        <tr>
+                            <td>{{ score.option.name }}</td>
+                            <td>{{ score.criterion.name }}</td>
+                            <td>{{ score.value }}/100</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No scores were saved for this decision.</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'home_page' %}">
+                <button type="button" class="home">Home</button>
+            </a>
+</div>
+</main>
+</body>
+</html>

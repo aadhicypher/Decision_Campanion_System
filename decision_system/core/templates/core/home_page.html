@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Decide</title>
+<style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --success-color: #10b981;
+        --gray-50: #0b1220;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell {
+        padding-top: 2.25rem;
+        padding-bottom: 3rem;
+    }
+
+    .card {
+        background: rgba(15, 24, 40, 0.94);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+    }
+
+    h2, h3 { color: #f3f7ff; }
+    .home-layout-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: calc(100vh - 160px);
+        padding: 1rem 0;
+    }
+
+    .home-layout {
+        display: grid;
+        grid-template-columns: 380px minmax(0, 1fr);
+        gap: 2rem;
+        width: min(100%, 1180px);
+        margin: 0;
+    }
+
+    .sidebar {
+        padding: 1.5rem;
+    }
+
+    .sidebar > a {
+        display: block;
+        width: 100%;
+        text-decoration: none;
+    }
+
+    .sidebar h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.45rem;
+    }
+
+    .new-decision {
+        display: block;
+        width: 100%;
+        padding: 1rem 1.25rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        cursor: pointer;
+        margin-top: 0;
+        margin-bottom: 1.25rem;
+        background-color: var(--success-color);
+    }
+
+    .new-decision:hover {
+        background-color: #056896;
+    }
+
+    .history-list {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .history-item {
+        display: block;
+        text-decoration: none;
+        color: var(--text-primary);
+        background: var(--gray-50);
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 0.9rem;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .history-item:hover {
+        background: #15223a;
+        border-color: var(--primary-color);
+    }
+
+    .empty-state {
+        margin: 0;
+        color: var(--text-secondary);
+    }
+
+    .main-panel {
+        display: grid;
+        align-content: center;
+        min-height: 500px;
+        padding: 2.25rem;
+        text-align: center;
+    }
+
+    .main-panel h2 {
+        margin-bottom: 1rem;
+        font-size: 2.2rem;
+    }
+
+    .main-panel p {
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+
+    .cta-link {
+        justify-self: center;
+    }
+
+    .cta-link button {
+        min-width: 320px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        background: var(--primary-color);
+        color: #fff;
+        cursor: pointer;
+        margin-top: 0;
+    }
+
+    @media (max-width: 768px) {
+        .site-header-inner,
+        .page-shell {
+            padding: 0 1rem;
+        }
+
+        .home-layout-wrapper {
+            min-height: auto;
+            padding: 0.5rem 0 1rem;
+        }
+
+        .home-layout {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .main-panel {
+            min-height: auto;
+            padding: 1.5rem;
+        }
+
+        .cta-link button {
+            min-width: 100%;
+        }
+    }
+</style>
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
+<div class="home-layout-wrapper">
+    <div class="home-layout">
+        <div class="sidebar card">
+            <a href="{% url 'decision_form' %}">
+                <button type="button" class="new-decision">Make Decision</button>
+            </a>
+
+            <h3>Recent Decisions</h3>
+            {% if decisions %}
+                <div class="history-list">
+                    {% for decision in decisions %}
+                        <a class="history-item" href="{% url 'decision_history' decision.id %}">
+                            {{ decision.context }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-state">No decisions yet. Create one to get started.</p>
+            {% endif %}
+        </div>
+
+        <div class="main-panel card">
+            <h2>Decision Companion</h2>
+            <p>Start a new decision or open any item in your recent history.</p>
+            <a class="cta-link" href="{% url 'decision_form' %}">
+                <button type="button">Make Decision</button>
+            </a>
+        </div>
+    </div>
+</div>
+</main>
+</body>
+</html>
