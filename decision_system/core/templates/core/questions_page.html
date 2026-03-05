@@ -1,15 +1,89 @@
-{% extends "core/base.html" %}
-
-{% block title %}Score Options - Decide{% endblock %}
-
-{% block extra_css %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Options - Decide</title>
 <style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --gray-50: #0b1220;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --gray-300: #3a4b66;
+        --gray-700: #9fb1cc;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell { padding-top: 2rem; padding-bottom: 2.5rem; }
+
+    h2, h3, h4 { color: #f3f7ff; }
+
+    input[type="number"],
+    input[type="text"],
+    select,
+    textarea {
+        background: #0f1a2c;
+        color: var(--text-primary);
+        border: 1px solid var(--gray-300);
+    }
+
+    button {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
     .score-container {
         margin-bottom: 3rem;
     }
 
     .info-box {
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.16) 0%, rgba(56, 189, 248, 0.08) 100%);
         border-left: 4px solid var(--primary-color);
         padding: 1rem;
         border-radius: 8px;
@@ -23,13 +97,12 @@
     }
 
     .score-section {
-        background: white;
+        background: rgba(15, 24, 40, 0.94);
         margin-bottom: 2rem;
         padding: 1.75rem;
-        background-color: #fafafa;
         border-radius: 12px;
         border: 1px solid var(--gray-200);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
     }
 
     .section-header {
@@ -130,9 +203,9 @@
     .score-group {
         margin-bottom: 1.25rem;
         padding: 1rem;
-        background: white;
+        background: #101b2e;
         border-radius: 8px;
-        border: 1px solid var(--gray-100);
+        border: 1px solid var(--gray-200);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -163,18 +236,18 @@
     .extra-section {
         margin-top: 3rem;
         padding: 2rem;
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%);
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.05) 100%);
         border-radius: 12px;
         border: 2px dashed var(--warning-color);
     }
 
     .extra-section h4 {
-        color: #b45309;
+        color: #fbbf24;
         margin-bottom: 1.5rem;
     }
 
     .custom-criterion {
-        background: white;
+        background: #101b2e;
         padding: 1.5rem;
         border-radius: 10px;
         margin-bottom: 1.5rem;
@@ -182,7 +255,7 @@
     }
 
     .custom-criterion h4 {
-        color: var(--gray-700);
+        color: #dbe7fb;
         margin-top: 0;
     }
 
@@ -258,12 +331,65 @@
         transform: translateY(-2px);
     }
 
+    .live-result-card {
+        background: rgba(15, 24, 40, 0.94);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 2rem;
+    }
+
+    .live-result-card h3 {
+        margin: 0 0 0.8rem 0;
+        font-size: 1.05rem;
+        color: #f3f7ff;
+    }
+
+    .live-result-best {
+        color: var(--text-secondary);
+        margin-bottom: 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .live-result-list {
+        display: grid;
+        gap: 0.55rem;
+    }
+
+    .live-result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid var(--gray-200);
+        background: #101b2e;
+        font-size: 0.95rem;
+    }
+
+    .live-result-score {
+        font-weight: 700;
+        color: #bfdbfe;
+    }
+
     .form-wrapper {
-        background: white;
+        background: rgba(15, 24, 40, 0.94);
         border-radius: 12px;
         padding: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid var(--gray-100);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--gray-200);
+    }
+
+    .form-wrapper > p {
+        color: var(--text-secondary);
+        margin-bottom: 1.25rem;
+    }
+
+    .no-criteria-note {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.6;
     }
 
     .error-alert {
@@ -295,9 +421,14 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
 <div class="score-container">
     <div class="info-box">
         <p>⭐ Now rate each option on the criteria. Adjust the priority levels if needed and score each option from 1-100.</p>
@@ -359,7 +490,7 @@
             {% endfor %}
             {% else %}
             <div class="score-section">
-                <p>No predefined criteria found for this decision. Add your own custom criteria below.</p>
+                <p class="no-criteria-note">No predefined criteria found for this decision. Add your own custom criteria below.</p>
             </div>
             {% endif %}
 
@@ -374,8 +505,13 @@
                     + Add Another Criterion
                 </button>
             </div>
+            <div class="live-result-card">
+                <h3>Live Result Preview</h3>
+                <p class="live-result-best" id="liveResultBest">Adjust priorities and scores to preview ranking.</p>
+                <div class="live-result-list" id="liveResultList"></div>
+            </div>
 
-            <button type="submit">Calculate Results →</button>
+            <button type="submit">Calculate Results -></button>
         </form>
     </div>
 </div>
@@ -387,6 +523,12 @@ const OPTIONS = [
         { id: "{{ option.id }}", name: "{{ option.name }}" },
     {% endfor %}
 ];
+
+const EXISTING_CRITERIA_NAMES = new Set([
+    {% for criterion in criteria %}
+    "{{ criterion.name|lower|escapejs }}",
+    {% endfor %}
+]);
 </script>
 
 <script>
@@ -431,6 +573,7 @@ function addExtraCriterion() {
 
     container.appendChild(block);
     updateSliders();
+    updateLivePreview();
 }
 
 function generateOptionSliders(index) {
@@ -454,31 +597,119 @@ function removeExtraCriterion(index) {
     const block = document.getElementById("extra-block-" + index);
     if (block) {
         block.remove();
+        updateLivePreview();
     }
 }
 
 function updateSliders() {
-    // Update score sliders
     document.querySelectorAll('.score-slider').forEach(slider => {
         slider.oninput = function() {
             const valueSpan = this.parentElement.querySelector('.score-value');
             if (valueSpan) {
                 valueSpan.textContent = this.value;
             }
+            updateLivePreview();
         }
-    });
+    })
 
-    // Update priority sliders
     document.querySelectorAll('.priority-slider').forEach(slider => {
         slider.oninput = function() {
             const valueSpan = this.parentElement.querySelector('.score-value');
             if (valueSpan) {
                 valueSpan.textContent = this.value;
             }
+            updateLivePreview();
         }
+    });
+
+    document.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
+        input.oninput = function() {
+            updateLivePreview();
+        };
     });
 }
 
+function getNumericValue(name, fallback = 0) {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return fallback;
+    const parsed = Number(el.value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function updateLivePreview() {
+    const listEl = document.getElementById("liveResultList");
+    const bestEl = document.getElementById("liveResultBest");
+    if (!listEl || !bestEl) return;
+
+    const criteriaWeights = [];
+    document.querySelectorAll('.priority-slider[name^="weight__"]').forEach(slider => {
+        criteriaWeights.push({
+            key: slider.name,
+            weight: Math.max(0, Number(slider.value) || 0)
+        });
+    });
+
+    const seenCustom = new Set();
+    document.querySelectorAll('.custom-criterion').forEach(block => {
+        const id = block.id.replace('extra-block-', '');
+        const nameInput = block.querySelector(`[name="extra_name_${id}"]`);
+        const weightInput = block.querySelector(`[name="extra_weight_${id}"]`);
+        const customName = (nameInput ? nameInput.value : '').trim().toLowerCase();
+        const weight = Math.max(0, Number(weightInput ? weightInput.value : 0) || 0);
+
+        if (!customName) return;
+        if (EXISTING_CRITERIA_NAMES.has(customName)) return;
+        if (seenCustom.has(customName)) return;
+        seenCustom.add(customName);
+
+        criteriaWeights.push({
+            key: `extra_${id}`,
+            weight: weight
+        });
+    });
+
+    const totalPriority = criteriaWeights.reduce((sum, c) => sum + c.weight, 0);
+    if (totalPriority <= 0) {
+        bestEl.textContent = "Add at least one criterion with positive priority to preview ranking.";
+        listEl.innerHTML = "";
+        return;
+    }
+
+    const scores = OPTIONS.map(opt => {
+        let total = 0;
+
+        criteriaWeights.forEach(c => {
+            const normalizedPriority = c.weight / totalPriority;
+            let rawScore = 0;
+
+            if (c.key.startsWith("weight__")) {
+                const criterionId = c.key.replace("weight__", "");
+                rawScore = getNumericValue(`${criterionId}__${opt.id}`, 0);
+            } else {
+                const extraId = c.key.replace("extra_", "");
+                rawScore = getNumericValue(`extra_${extraId}__${opt.id}`, 0);
+            }
+
+            total += (Math.max(0, Number(rawScore) || 0) / 100) * normalizedPriority;
+        });
+
+        return { id: opt.id, name: opt.name, score: total };
+    }).sort((a, b) => b.score - a.score);
+
+    const best = scores[0];
+    bestEl.textContent = `Current best: ${best.name} (${best.score.toFixed(4)})`;
+    listEl.innerHTML = scores.map((row, idx) => `
+        <div class="live-result-item">
+            <span>#${idx + 1} ${row.name}</span>
+            <span class="live-result-score">${row.score.toFixed(4)}</span>
+        </div>
+    `).join("");
+}
+
 updateSliders();
+updateLivePreview();
 </script>
-{% endblock %}
+</main>
+</body>
+</html>
+

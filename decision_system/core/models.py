@@ -82,3 +82,17 @@ class Result(models.Model):
     chosen_option = models.ForeignKey(Option, on_delete=models.CASCADE)
     total_score = models.FloatField()
     explanation = models.TextField(null=True, blank=True)
+
+
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="password_reset_otps")
+    otp_hash = models.CharField(max_length=128)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"PasswordResetOTP(user={self.user.username}, used={self.is_used})"

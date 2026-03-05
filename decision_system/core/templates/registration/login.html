@@ -1,9 +1,60 @@
-{% extends "core/base.html" %}
-
-{% block title %}Login - Decide{% endblock %}
-
-{% block extra_css %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Decide</title>
 <style>
+    :root {
+        --primary-color: #3b82f6;
+        --primary-dark: #1d4ed8;
+        --danger-color: #ef4444;
+        --gray-100: #162033;
+        --gray-200: #273449;
+        --gray-300: #3a4b66;
+        --text-primary: #dbe7fb;
+        --text-secondary: #9db0cc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(9, 14, 27, 0.92);
+        backdrop-filter: blur(6px);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .site-header-inner,
+    .page-shell {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    .site-header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .site-header a {
+        color: #c8dcff;
+        text-decoration: none;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .page-shell { padding-top: 2rem; padding-bottom: 2.5rem; }
     .login-container {
         display: grid;
         place-items: center;
@@ -12,11 +63,11 @@
     }
 
     .login-wrapper {
-        background: white;
+        background: rgba(15, 24, 40, 0.94);
         padding: 2.5rem;
         border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-        border: 1px solid var(--gray-100);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--gray-200);
         width: 100%;
         max-width: 400px;
     }
@@ -76,7 +127,7 @@
         font-size: 1rem;
         font-family: inherit;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        background-color: white;
+        background-color: #0f1a2c;
         color: var(--text-primary);
     }
 
@@ -188,9 +239,14 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
+</head>
+<body>
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{% url 'home_page' %}">Decide</a>
+    </div>
+</header>
+<main class="page-shell">
 <div class="login-container">
     <div class="login-wrapper">
         <div class="login-header">
@@ -225,7 +281,7 @@
         </form>
 
         <div class="auth-links">
-            <a href="{% url 'password_reset' %}">🔑 Forgot Password?</a>
+            <a href="{% url 'forgot_password' %}">🔑 Forgot Password?</a>
             <a href="{% url 'signup' %}">Create Account →</a>
         </div>
 
@@ -234,4 +290,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
+</main>
+</body>
+</html>
+

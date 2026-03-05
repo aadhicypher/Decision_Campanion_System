@@ -1,9 +1,18 @@
 from pathlib import Path
 import os
+import random
+from datetime import timedelta
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
 from .models import (
     Category,
     SubCategory,
@@ -12,10 +21,13 @@ from .models import (
     Option,
     Criterion,
     Score,
-    Result
+    Result,
+    PasswordResetOTP
 )
 
 TEMP_RESULT_SESSION_KEY = "latest_result_payload"
+PASSWORD_RESET_USER_SESSION_KEY = "password_reset_user_id"
+PASSWORD_RESET_VERIFIED_SESSION_KEY = "password_reset_verified"
 
 
 def _is_other_category(category):
@@ -83,8 +95,145 @@ def _get_gemini_api_key():
 
 
 # ==============================
-# AUTHENTICATION - SIGNUP
+# AUTHENTICATION
 # ==============================
+
+def _clear_password_reset_session(request):
+    request.session.pop(PASSWORD_RESET_USER_SESSION_KEY, None)
+    request.session.pop(PASSWORD_RESET_VERIFIED_SESSION_KEY, None)
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("home_page")
+
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        login(request, form.get_user())
+        return redirect("home_page")
+
+    return render(request, "registration/login.html", {"form": form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("login")
+
+
+def forgot_password_view(request):
+    error = None
+    success = None
+
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip().lower()
+        user_model = get_user_model()
+        user = user_model.objects.filter(email__iexact=email).first()
+
+        if not user:
+            error = "No account found with that email address."
+        else:
+            otp_code = f"{random.randint(0, 999999):06d}"
+            expires_at = timezone.now() + timedelta(minutes=10)
+
+            PasswordResetOTP.objects.filter(user=user, is_used=False).update(is_used=True)
+            PasswordResetOTP.objects.create(
+                user=user,
+                otp_hash=make_password(otp_code),
+                expires_at=expires_at
+            )
+
+            send_mail(
+                subject="Decide Password Reset OTP",
+                message=(
+                    f"Your OTP to reset the password is: {otp_code}\n"
+                    f"This OTP expires at {expires_at.strftime('%Y-%m-%d %H:%M:%S')} UTC."
+                ),
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@decide.local"),
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+            request.session[PASSWORD_RESET_USER_SESSION_KEY] = user.id
+            request.session[PASSWORD_RESET_VERIFIED_SESSION_KEY] = False
+            success = "OTP sent to your email. Enter it to continue."
+            return redirect("verify_reset_otp")
+
+    return render(request, "registration/forgot_password.html", {
+        "error": error,
+        "success": success,
+    })
+
+
+def verify_reset_otp_view(request):
+    error = None
+    user_id = request.session.get(PASSWORD_RESET_USER_SESSION_KEY)
+    if not user_id:
+        return redirect("forgot_password")
+
+    user_model = get_user_model()
+    user = user_model.objects.filter(id=user_id).first()
+    if not user:
+        _clear_password_reset_session(request)
+        return redirect("forgot_password")
+
+    if request.method == "POST":
+        otp = request.POST.get("otp", "").strip()
+        otp_record = PasswordResetOTP.objects.filter(
+            user=user,
+            is_used=False,
+            expires_at__gt=timezone.now()
+        ).first()
+
+        if not otp_record or not check_password(otp, otp_record.otp_hash):
+            error = "Invalid or expired OTP."
+        else:
+            otp_record.is_used = True
+            otp_record.save(update_fields=["is_used"])
+            request.session[PASSWORD_RESET_VERIFIED_SESSION_KEY] = True
+            return redirect("reset_password")
+
+    return render(request, "registration/verify_otp.html", {
+        "email": user.email,
+        "error": error,
+    })
+
+
+def reset_password_view(request):
+    error = None
+    success = None
+    user_id = request.session.get(PASSWORD_RESET_USER_SESSION_KEY)
+    is_verified = request.session.get(PASSWORD_RESET_VERIFIED_SESSION_KEY, False)
+
+    if not user_id or not is_verified:
+        return redirect("forgot_password")
+
+    user_model = get_user_model()
+    user = user_model.objects.filter(id=user_id).first()
+    if not user:
+        _clear_password_reset_session(request)
+        return redirect("forgot_password")
+
+    if request.method == "POST":
+        new_password = request.POST.get("new_password", "")
+        confirm_password = request.POST.get("confirm_password", "")
+
+        if new_password != confirm_password:
+            error = "Passwords do not match."
+        else:
+            try:
+                validate_password(new_password, user=user)
+                user.set_password(new_password)
+                user.save(update_fields=["password"])
+                _clear_password_reset_session(request)
+                success = "Password updated successfully. Please log in."
+                return redirect("login")
+            except ValidationError as exc:
+                error = " ".join(exc.messages)
+
+    return render(request, "registration/reset_password.html", {
+        "error": error,
+        "success": success,
+    })
 
 def signup(request):
     """User signup view"""

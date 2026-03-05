@@ -71,7 +71,7 @@ WSGI_APPLICATION = 'decision_system.wsgi.application'
 
 # Authentication URLs
 LOGIN_URL = "/accounts/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/home/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 # Email Configuration (Development)

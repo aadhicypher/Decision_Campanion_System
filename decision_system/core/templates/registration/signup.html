@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Decide</title>
+    <style>
+        :root { --primary:#3b82f6; --primary-dark:#1d4ed8; --text:#dbe7fb; --muted:#9db0cc; --line:#273449; --danger:#ef4444; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; min-height: 100vh; color: var(--text); background: radial-gradient(circle at top left, #13213a 0%, #0b1220 45%, #070c16 100%); }
+        .wrap { max-width: 520px; margin: 56px auto; padding: 0 1rem; }
+        .card { background: rgba(15, 24, 40, 0.94); border: 1px solid var(--line); border-radius: 12px; padding: 1.5rem; box-shadow: 0 14px 28px rgba(0,0,0,.3); }
+        h2 { margin-bottom: .4rem; }
+        p { color: var(--muted); margin-bottom: 1rem; }
+        .field { margin-bottom: .95rem; }
+        label { display: block; margin-bottom: .45rem; font-weight: 600; }
+        input { width: 100%; padding: .85rem 1rem; border-radius: 8px; border: 1px solid #3a4b66; background: #0f1a2c; color: var(--text); }
+        ul { margin: .25rem 0 .65rem 1rem; color: var(--muted); font-size: .9rem; }
+        .err { margin-top: .4rem; color: #fecaca; font-size: .9rem; }
+        .errbox { border-left: 4px solid var(--danger); background: rgba(239,68,68,.12); padding: .75rem .9rem; border-radius: 6px; margin-bottom: 1rem; }
+        button { width: 100%; padding: .9rem 1rem; border: 0; border-radius: 8px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; margin-top: .5rem; }
+        button:hover { background: var(--primary-dark); }
+        a { color: #93c5fd; text-decoration: none; }
+        .muted { margin-top: 1rem; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <h2>Create Account</h2>
+            <p>Sign up to start making decisions.</p>
+
+            {% if form.non_field_errors %}
+            <div class="errbox">
+                {% for error in form.non_field_errors %}
+                <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="field">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                    <ul>{{ field.help_text|safe }}</ul>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="err">
+                        {% for error in field.errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit">Create Account</button>
+            </form>
+
+            <p class="muted">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
+    </div>
+</body>
+</html>
